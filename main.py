@@ -1,5 +1,8 @@
-import numpy as np
+import sys
 import timeit
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import Callable
 
 
 def binary_search(search_space: list, target: int, ordered: bool = False) -> (int, int, list):
@@ -60,10 +63,27 @@ def quicksort(l: list) -> list:
         else:
             right += [e]
 
-    # recursion
+    # conquering
     left = quicksort(left)
     right = quicksort(right)
     return left + [pivot] + right
+
+
+def test_sorting(f: Callable, l_len: int):
+    l = np.random.randint(low=1, high=100, size=l_len)
+    return f(l)
+
+
+def plot(ys: list, x: list, title: str = None, labels=list, xlab: str = None, ylab: str = None):
+    fig, ax = plt.subplots()
+    for y, label in zip(ys, labels):
+        ax.plot(x,  y, '-', label=label)
+
+    ax.set_xscale('log'), ax.set_yscale('log')
+    plt.xlabel(xlab), plt.ylabel(ylab)
+    plt.title(title)
+    plt.legend()
+    plt.show()
 
 
 def main():
@@ -75,6 +95,21 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-
-    #print(timeit.timeit(test_sorting(quicksort), number=100))
+    sys.setrecursionlimit(10 ** 6)
+    fs = [f.__name__ for f in [quicksort, mergesort]]
+    lengths = [int(10**i) for i in np.linspace(1, 5, 20)]
+    print(f'lengths: {lengths}')
+    results = {}
+    for cnt, f in enumerate(fs):
+        print(f'{cnt}/{len(fs)} Evaluation of {f} started.')
+        try:
+            results[f]
+        except Exception:
+            results[f] = []
+        for l in lengths:
+            print(f'Testing {f} for len(list)={l}.')
+            results[f].append(timeit.timeit(stmt=f'test_sorting(f={f}, l_len={l})', globals=globals(), number=100))
+    plot(x=lengths, ys=[results[f] for f in fs], labels=fs,
+         title='average sorting time',
+         xlab='log(list length)',
+         ylab='time in s')
