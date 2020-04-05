@@ -1,9 +1,10 @@
 import numpy as np
+import timeit
 
 
 def binary_search(search_space: list, target: int, ordered: bool = False) -> (int, int, list):
     if not ordered:
-        search_space = quicksort(list(search_space))
+        search_space = mergesort(list(search_space))
 
     i_low = 0
     i_high = len(search_space) - 1
@@ -21,8 +22,33 @@ def binary_search(search_space: list, target: int, ordered: bool = False) -> (in
     return i_mid, steps, search_space
 
 
+def mergesort(l: list) -> list:
+    if len(l) <= 1:  # recursion escape condition
+        return l
+
+    # divide
+    left = mergesort(l[0:int(len(l)/2)])
+    right = mergesort(l[int(len(l)/2): len(l)])
+
+    # merge
+    l = []
+    while len(left) > 0 and len(right) > 0:
+        if left[0] <= right[0]:
+            l.append(left[0])
+            left = left[1:]
+        else:
+            l.append(right[0])
+            right = right[1:]
+    if len(left) > 0:
+        l += left
+    else:
+        l += right
+    return l
+
+
 def quicksort(l: list) -> list:
-    if len(l) < 2:
+    # pivot is the first on the right, should be the median
+    if len(l) < 1:  # recursion escape condition
         return l
 
     # partitioning
@@ -50,3 +76,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+    #print(timeit.timeit(test_sorting(quicksort), number=100))
