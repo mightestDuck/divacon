@@ -94,11 +94,11 @@ def main():
     print(f'target={target}, idx={idx}, list[idx]={l[idx]} found in {steps} steps.')
 
 
-if __name__ == '__main__':
+def test():
     sys.setrecursionlimit(10 ** 6)
     fs = [f.__name__ for f in [quicksort, mergesort]]
     lengths = [int(10**i) for i in np.linspace(1, 5, 20)]
-    print(f'lengths: {lengths}')
+    print(f'The test will be performed for varying list lengths.\n{lengths}')
     results = {}
     for cnt, f in enumerate(fs):
         print(f'{cnt}/{len(fs)} Evaluation of {f} started.')
@@ -113,3 +113,7 @@ if __name__ == '__main__':
          title='average sorting time',
          xlab='log(list length)',
          ylab='time in s')
+
+
+if __name__ == '__main__':
+    test()
